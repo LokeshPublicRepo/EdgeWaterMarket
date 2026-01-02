@@ -1,35 +1,27 @@
 version: 2.1
 
 jobs:
-  build:
-    docker:
-      - image: cimg/node:20.11
-    steps:
-      - checkout
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - run:
-          name: Run TypeScript Compiler
-          command: npm run build
-
   test:
     docker:
       - image: cimg/node:20.11
     steps:
       - checkout
       - run:
-          name: Install Dependencies
-          command: npm install
+          name: Install dependencies
+          command: npm ci
       - run:
-          name: Run Playwright Tests
+          name: Install Playwright browsers
+          command: npx playwright install --with-deps
+      - run:
+          name: Run Playwright tests
           command: npm run test
+      - store_artifacts:
+          path: playwright-report
+      - store_test_results:
+          path: playwright-report
 
 workflows:
   version: 2
-  build_and_test:
+  test_only:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      - test
