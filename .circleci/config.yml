@@ -19,6 +19,15 @@ jobs:
           path: playwright-report
       - store_test_results:
           path: test-results
+      - run:
+          name: Notify Teams
+          when: always
+          command: |
+            if [ -n "$TEAMS_WEBHOOK" ]; then
+              curl -H "Content-Type: application/json" -d "{\"text\":\"Playwright tests finished: $CIRCLE_BUILD_URL\"}" "$TEAMS_WEBHOOK"
+            else
+              echo "TEAMS_WEBHOOK not set; skipping Teams notification"
+            fi
 workflows:
   version: 2
   test_only:
